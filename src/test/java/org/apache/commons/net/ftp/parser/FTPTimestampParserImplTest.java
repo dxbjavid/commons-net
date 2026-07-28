@@ -271,6 +271,32 @@ java.text.ParseException: Timestamp 'Mar 13 02:33' could not be parsed using a s
         }
     }
 
+    /**
+     * A numeric year from a server listing must be read as a Gregorian year regardless of the JVM default locale. Under a Thai locale the default
+     * SimpleDateFormat calendar is a Buddhist calendar, which would otherwise shift the parsed instant by 543 years.
+     */
+    @Test
+    void testParseTimestampWithNonGregorianDefaultLocale() throws ParseException {
+        final Locale defaultLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(new Locale("th", "TH"));
+            final FTPTimestampParserImpl parser = new FTPTimestampParserImpl();
+            final FTPClientConfig config = new FTPClientConfig(FTPClientConfig.SYST_UNIX);
+            config.setDefaultDateFormatStr("yyyy-MM-dd HH:mm");
+            config.setRecentDateFormatStr("MMM d HH:mm");
+            config.setServerLanguageCode("en");
+            config.setServerTimeZoneId("GMT");
+            parser.configure(config);
+            final Calendar parsed = parser.parseTimestamp("2010-03-13 22:45", new GregorianCalendar());
+            final GregorianCalendar expected = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.ROOT);
+            expected.clear();
+            expected.set(2010, Calendar.MARCH, 13, 22, 45, 0);
+            assertEquals(expected.getTimeInMillis(), parsed.getTimeInMillis());
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
+    }
+
     @Test
     void testParseShortFutureDates1() throws Exception {
         final GregorianCalendar now = new GregorianCalendar(2001, Calendar.MAY, 30, 12, 0);

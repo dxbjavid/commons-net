@@ -25,6 +25,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -154,6 +155,26 @@ class EnterpriseUnixFTPEntryParserTest extends AbstractFTPParseTest {
         assertEquals(13, zDateTime.getHour());
         assertEquals(56, zDateTime.getMinute());
         assertEquals(0, zDateTime.getSecond());
+    }
+
+    /**
+     * A numeric year in a listing must be read as a Gregorian year regardless of the JVM default locale. Under a Thai locale the base Calendar is a Buddhist
+     * calendar, which would otherwise store the timestamp 543 years out.
+     */
+    @Test
+    void testAbsoluteYearWithNonGregorianDefaultLocale() {
+        final Locale defaultLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(new Locale("th", "TH"));
+            final FTPFile ftpFile = getParser().parseFTPEntry("-C--E-----FTP A QUA1I1      18128       41 Apr 1 2014 QUADTEST3");
+            final TimeZone timeZone = TimeZone.getDefault();
+            final ZonedDateTime zDateTime = ZonedDateTime.ofInstant(ftpFile.getTimestampInstant(), ZoneId.of(timeZone.getID()));
+            assertEquals(2014, zDateTime.getYear());
+            assertEquals(Month.APRIL, zDateTime.getMonth());
+            assertEquals(1, zDateTime.getDayOfMonth());
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Override

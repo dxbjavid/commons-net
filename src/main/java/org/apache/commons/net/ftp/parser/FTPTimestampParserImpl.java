@@ -23,6 +23,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.apache.commons.net.ftp.Configurable;
@@ -294,6 +295,7 @@ public class FTPTimestampParserImpl implements FTPTimestampParser, Configurable 
             final String year = Integer.toString(now.get(Calendar.YEAR));
             final String timeStampStrPlusYear = timestampStr + " " + year;
             final SimpleDateFormat hackFormatter = new SimpleDateFormat(recentDateFormat.toPattern() + " yyyy", recentDateFormat.getDateFormatSymbols());
+            hackFormatter.setCalendar(new GregorianCalendar());
             hackFormatter.setLenient(false);
             hackFormatter.setTimeZone(recentDateFormat.getTimeZone());
             final ParsePosition pp = new ParsePosition(0);
@@ -338,6 +340,7 @@ public class FTPTimestampParserImpl implements FTPTimestampParser, Configurable 
             } else {
                 defaultDateFormat = new SimpleDateFormat(format);
             }
+            defaultDateFormat.setCalendar(new GregorianCalendar());
             defaultDateFormat.setLenient(false);
         } else {
             defaultDateFormat = null;
@@ -363,6 +366,7 @@ public class FTPTimestampParserImpl implements FTPTimestampParser, Configurable 
             } else {
                 recentDateFormat = new SimpleDateFormat(format);
             }
+            recentDateFormat.setCalendar(new GregorianCalendar());
             recentDateFormat.setLenient(false);
         } else {
             recentDateFormat = null;
