@@ -77,8 +77,8 @@ class MLSxEntryParserTest extends AbstractFTPParseTest {
     }
 
     /**
-     * The RFC 3659 time stamp is a numeric Gregorian date. Parsing it must not depend on the JVM default locale's calendar, which for e.g. a Thai locale is a
-     * Buddhist calendar that would read the year 543 years out.
+     * The RFC 3659 time stamp is a numeric Gregorian date. Parsing it must not depend on the JVM default locale's calendar, which, for example, 
+     * a Thai locale is a Buddhist calendar that would read the year 543 years out.
      */
     @Test
     @DefaultLocale(language = "th", country = "TH")
