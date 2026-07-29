@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.DefaultLocale;
 
 /**
  */
@@ -80,18 +81,13 @@ class MLSxEntryParserTest extends AbstractFTPParseTest {
      * Buddhist calendar that would read the year 543 years out.
      */
     @Test
+    @DefaultLocale(language = "th", country = "TH")
     void testParseGMTdateTimeWithNonGregorianDefaultLocale() {
-        final Locale defaultLocale = Locale.getDefault();
-        try {
-            Locale.setDefault(new Locale("th", "TH"));
-            final Calendar parsed = MLSxEntryParser.parseGMTdateTime("20100313224553");
-            final GregorianCalendar expected = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.ROOT);
-            expected.clear();
-            expected.set(2010, Calendar.MARCH, 13, 22, 45, 53);
-            assertEquals(expected.getTimeInMillis(), parsed.getTimeInMillis());
-        } finally {
-            Locale.setDefault(defaultLocale);
-        }
+        final Calendar parsed = MLSxEntryParser.parseGMTdateTime("20100313224553");
+        final GregorianCalendar expected = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.ROOT);
+        expected.clear();
+        expected.set(2010, Calendar.MARCH, 13, 22, 45, 53);
+        assertEquals(expected.getTimeInMillis(), parsed.getTimeInMillis());
     }
 
     @Override
